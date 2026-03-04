@@ -1,1 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvestorHN - Detalle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar"><div class="nav-inner"><div class="logo-name">InvestorHN</div></div></nav>
+    <div id="dealContent" class="deal-container"></div>
+    <script src="data.js"></script>
+    <script>
+        const id = new URLSearchParams(window.location.search).get('id');
+        const p = propiedades.find(x => x.id == id);
+        if(p) {
+            document.getElementById('dealContent').innerHTML = `
+                <h1>${p.titulo}</h1>
+                <img src="${p.img}" style="width:100%; border-radius:12px">
+                <div class="info-card">
+                    <div class="info-row"><span>Precio</span><strong>L. ${p.preciolps.toLocaleString()}</strong></div>
+                    <div class="info-row"><span>Margen</span><strong>L. ${p.margenlps.toLocaleString()}</strong></div>
+                </div>
+                <a href="https://wa.me/50498983365" class="btn-wa-full">Contactar</a>
+            `;
+        }
+    </script>
+</body>
+</html>
 
