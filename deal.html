@@ -151,15 +151,17 @@ function renderDeal() {
         <h1 class="deal-title">${p.titulo}</h1>
         <p class="deal-location">&#128205; ${p.colonia ? p.colonia + ', ' : ''}${p.ciudad}, ${p.departamento}</p>
         <div class="deal-specs-row">
-          ${p.habitaciones ? `<div class="spec-item"><span class="spec-icon">&#127968;</span><span>${p.habitaciones} Cuartos</span></div>` : ''}
-          ${p.banos ? `<div class="spec-item"><span class="spec-icon">&#128703;</span><span>${p.banos} Baños</span></div>` : ''}
-          ${p.metros ? `<div class="spec-item"><span class="spec-icon">&#9635;</span><span>${p.metros} m²</span></div>` : ''}
-          ${p.lote ? `<div class="spec-item"><span class="spec-icon">&#127757;</span><span>${p.lote} m² lote</span></div>` : ''}
+          ${p.habitaciones ? `<div class="spec-item"><span class="spec-icon-pro"></span><span>${p.habitaciones} Cuartos</span></div>` : ''}
+          ${p.banos ? `<div class="spec-item"><span class="spec-icon-pro"></span><span>${p.banos} Baños</span></div>` : ''}
+          ${p.metros ? `<div class="spec-item"><span class="spec-icon-pro"></span><span>${p.metros} m²</span></div>` : ''}
+          ${p.lote ? `<div class="spec-item"><span class="spec-icon-pro"></span><span>${p.lote} m² lote</span></div>` : ''}
         </div>
-        <div class="deal-price-box">
-          <div class="deal-price">${precio}</div>
-          <div class="deal-price-label">Precio Pedido</div>
+        
+        <div class="property-overview">
+          <h3>Overview de la Propiedad</h3>
+          <p>${p.overview || 'Esta propiedad ofrece una excelente oportunidad de inversión en una ubicación privilegiada. Con características ideales para inversionistas que buscan rentabilidad y potencial de apreciación en el mercado inmobiliario hondureño.'}</p>
         </div>
+        
         ${p.details ? `
         <div class="deal-info-section">
           <h3>Detalles de la Propiedad</h3>
@@ -177,9 +179,11 @@ function renderDeal() {
       <div class="deal-sidebar">
         <div class="deal-invest-card">
           <h3>Resumen de Inversión</h3>
+          <div class="inv-row price-main"><span>Precio Pedido</span><strong>${precio}</strong></div>
           ${p.srvlps ? `<div class="inv-row"><span>Valor ARV</span><strong>L. ${formatNumber(p.srvlps)}</strong></div>` : ''}
           ${p.margenlps ? `<div class="inv-row"><span>Margen estimado</span><strong>L. ${formatNumber(p.margenlps)}</strong></div>` : ''}
-          <a href="https://wa.me/50498983365?text=Hola, me interesa la propiedad: ${encodeURIComponent(p.titulo)}" class="btn-wa-full" target="_blank">&#128241; Contactar por WhatsApp</a>
+          <button class="btn-buy-now" onclick="window.open('https://wa.me/50498983365?text=Hola, quiero COMPRAR la propiedad: ${encodeURIComponent(p.titulo)}', '_blank')">COMPRAR AHORA</button>
+          <a href="https://wa.me/50498983365?text=Hola, me interesa la propiedad: ${encodeURIComponent(p.titulo)}" class="btn-contact" target="_blank">Contactar por WhatsApp</a>
           <a href="index.html" class="btn-back-list">&#8592; Ver más propiedades</a>
         </div>
       </div>
@@ -203,9 +207,9 @@ function renderDeal() {
           <h3 class="card-title">${r.titulo}</h3>
           <p class="card-address">${r.ciudad}, ${r.departamento}</p>
           <div class="card-specs">
-            ${r.habitaciones ? `<span>&#127968; ${r.habitaciones}</span>` : ''}
-            ${r.banos ? `<span>&#128703; ${r.banos}</span>` : ''}
-            ${r.metros ? `<span>&#9635; ${r.metros}m²</span>` : ''}
+            ${r.habitaciones ? `<span>Cuartos: ${r.habitaciones}</span>` : ''}
+            ${r.banos ? `<span>Baños: ${r.banos}</span>` : ''}
+            ${r.metros ? `<span>${r.metros}m²</span>` : ''}
           </div>
           <div class="card-pricing"><span class="price">${rprecio}</span></div>
         </div>
