@@ -1,30 +1,196 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestorHN - Detalle</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestorHN - Detalle de Propiedad</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar"><div class="nav-inner"><div class="logo-name">InvestorHN</div></div></nav>
-    <div id="dealContent" class="deal-container"></div>
-    <script src="data.js"></script>
-    <script>
-        const id = new URLSearchParams(window.location.search).get('id');
-        const p = propiedades.find(x => x.id == id);
-        if(p) {
-            document.getElementById('dealContent').innerHTML = `
-                <h1>${p.titulo}</h1>
-                <img src="${p.img}" style="width:100%; border-radius:12px">
-                <div class="info-card">
-                    <div class="info-row"><span>Precio</span><strong>L. ${p.preciolps.toLocaleString()}</strong></div>
-                    <div class="info-row"><span>Margen</span><strong>L. ${p.margenlps.toLocaleString()}</strong></div>
-                </div>
-                <a href="https://wa.me/50498983365" class="btn-wa-full">Contactar</a>
-            `;
-        }
-    </script>
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="logo">
+      <a href="index.html" style="text-decoration:none;color:inherit">
+        <div class="logo-name">InvestorHN</div>
+        <span class="logo-sub">Propiedades de Inversión</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">&#8592; Volver al Marketplace</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-currency active" onclick="toggleCurrency('lps')">LPS</button>
+      <button class="btn-currency" onclick="toggleCurrency('usd')">USD</button>
+    </div>
+  </div>
+</nav>
+
+<div id="dealContent" class="deal-page"><p style="padding:2rem">Cargando propiedad...</p></div>
+<div id="relatedSection" class="related-section" style="display:none">
+  <h2 class="related-title">Propiedades Similares</h2>
+  <div id="relatedList" class="properties-list related-grid"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+let monedaActual = 'lps';
+let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+
+function toggleCurrency(currency) {
+  monedaActual = currency;
+  document.querySelectorAll('.btn-currency').forEach(btn => btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === currency));
+  renderDeal();
+}
+
+function formatNumber(num) {
+  return new Intl.NumberFormat('es-HN').format(num);
+}
+
+function toggleFavDeal(id) {
+  const idx = favoritos.indexOf(id);
+  if (idx === -1) favoritos.push(id);
+  else favoritos.splice(idx, 1);
+  localStorage.setItem('favoritos', JSON.stringify(favoritos));
+  document.getElementById('heartBtn').classList.toggle('active', favoritos.includes(id));
+}
+
+function getStatusClass(status) {
+  if (!status) return '';
+  const s = status.toUpperCase();
+  if (s.includes('VENTA')) return 'status-venta';
+  if (s.includes('SUBASTA')) return 'status-subasta';
+  if (s.includes('BANCO')) return 'status-banco';
+  return 'status-venta';
+}
+
+let currentPhotoIndex = 0;
+let currentPhotos = [];
+
+function openGallery(imgs, index) {
+  currentPhotos = imgs;
+  currentPhotoIndex = index;
+  document.getElementById('lightboxImg').src = imgs[index];
+  document.getElementById('lightbox').style.display = 'flex';
+  document.getElementById('lightboxCount').textContent = `${index+1} / ${imgs.length}`;
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+}
+
+function prevPhoto() {
+  currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex];
+  document.getElementById('lightboxCount').textContent = `${currentPhotoIndex+1} / ${currentPhotos.length}`;
+}
+
+function nextPhoto() {
+  currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex];
+  document.getElementById('lightboxCount').textContent = `${currentPhotoIndex+1} / ${currentPhotos.length}`;
+}
+
+function renderDeal() {
+  const id = parseInt(new URLSearchParams(window.location.search).get('id'));
+  const p = propiedades.find(x => x.id === id);
+  if (!p) { document.getElementById('dealContent').innerHTML = '<p style="padding:2rem">Propiedad no encontrada.</p>'; return; }
+
+  const imgs = (p.imgs && p.imgs.length > 0) ? p.imgs : (p.img ? [p.img] : []);
+  const precio = monedaActual === 'lps' ? `L. ${formatNumber(p.preciolps)}` : `$ ${formatNumber(p.preciousd)}`;
+  const isFav = favoritos.includes(p.id);
+
+  const galleryHTML = imgs.length > 0 ? `
+  <div class="gallery-main" onclick="openGallery(${JSON.stringify(imgs)}, 0)">
+    <img src="${imgs[0]}" alt="${p.titulo}" class="gallery-main-img">
+    ${imgs.length > 1 ? `<span class="gallery-count">+${imgs.length} fotos</span>` : ''}
+  </div>
+  <div class="gallery-thumbs">
+    ${imgs.slice(1,5).map((img,i) => `<img src="${img}" alt="foto ${i+2}" onclick="openGallery(${JSON.stringify(imgs)}, ${i+1})" class="gallery-thumb">`).join('')}
+  </div>` : '';
+
+  document.getElementById('dealContent').innerHTML = `
+  <div class="deal-hero">${galleryHTML}</div>
+  <div class="deal-body">
+    <div class="deal-main">
+      <div class="deal-header">
+        <span class="status-badge ${getStatusClass(p.status || 'EN VENTA')}">${p.status || 'EN VENTA'}</span>
+        <button id="heartBtn" class="heart-btn-deal ${isFav ? 'active' : ''}" onclick="toggleFavDeal(${p.id})" title="Guardar favorito">&#9825; Guardar</button>
+      </div>
+      <h1 class="deal-title">${p.titulo}</h1>
+      <p class="deal-location">&#128205; ${p.colonia ? p.colonia + ', ' : ''}${p.ciudad}, ${p.departamento}</p>
+      <div class="deal-specs-row">
+        ${p.habitaciones ? `<div class="spec-item"><span class="spec-icon">&#127968;</span><span>${p.habitaciones} Cuartos</span></div>` : ''}
+        ${p.banos ? `<div class="spec-item"><span class="spec-icon">&#128703;</span><span>${p.banos} Baños</span></div>` : ''}
+        ${p.metros ? `<div class="spec-item"><span class="spec-icon">&#9635;</span><span>${p.metros} m²</span></div>` : ''}
+        ${p.lote ? `<div class="spec-item"><span class="spec-icon">&#127757;</span><span>${p.lote} m² lote</span></div>` : ''}
+      </div>
+      <div class="deal-price-box">
+        <div class="deal-price">${precio}</div>
+        <div class="deal-price-label">Precio Pedido</div>
+      </div>
+      ${p.details ? `
+      <div class="deal-info-section">
+        <h3>Detalles de la Propiedad</h3>
+        <div class="info-grid">
+          ${p.details.type ? `<div class="info-row"><span>Tipo</span><strong>${p.details.type}</strong></div>` : ''}
+          ${p.details.built ? `<div class="info-row"><span>Año construido</span><strong>${p.details.built}</strong></div>` : ''}
+          ${p.details.parking ? `<div class="info-row"><span>Parqueo</span><strong>${p.details.parking}</strong></div>` : ''}
+          ${p.details.condition ? `<div class="info-row"><span>Condición</span><strong>${p.details.condition}</strong></div>` : ''}
+          ${p.details.hvac ? `<div class="info-row"><span>Clima</span><strong>${p.details.hvac}</strong></div>` : ''}
+          ${p.details.occupancy ? `<div class="info-row"><span>Ocupación</span><strong>${p.details.occupancy}</strong></div>` : ''}
+          ${p.details.repairEstimate ? `<div class="info-row"><span>Estimado de reparación</span><strong>${p.details.repairEstimate}</strong></div>` : ''}
+        </div>
+      </div>` : ''}
+    </div>
+    <div class="deal-sidebar">
+      <div class="deal-invest-card">
+        <h3>Resumen de Inversión</h3>
+        ${p.srvlps ? `<div class="inv-row"><span>Valor ARV</span><strong>L. ${formatNumber(p.srvlps)}</strong></div>` : ''}
+        ${p.margenlps ? `<div class="inv-row"><span>Margen estimado</span><strong>L. ${formatNumber(p.margenlps)}</strong></div>` : ''}
+        <a href="https://wa.me/50498983365?text=Hola, me interesa la propiedad: ${encodeURIComponent(p.titulo)}" class="btn-wa-full" target="_blank">&#128241; Contactar por WhatsApp</a>
+        <a href="index.html" class="btn-back-list">&#8592; Ver más propiedades</a>
+      </div>
+    </div>
+  </div>`;
+
+  // Related properties
+  const related = propiedades.filter(x => x.id !== id && (x.ciudad === p.ciudad || x.tipo === p.tipo)).slice(0,4);
+  if (related.length > 0) {
+    document.getElementById('relatedSection').style.display = 'block';
+    document.getElementById('relatedList').innerHTML = related.map(r => {
+      const rprecio = monedaActual === 'lps' ? `L. ${formatNumber(r.preciolps)}` : `$ ${formatNumber(r.preciousd)}`;
+      const rImgs = (r.imgs && r.imgs[0]) ? r.imgs[0] : r.img;
+      return `<div class="property-card" onclick="window.location.href='deal.html?id=${r.id}'">
+        <div class="card-img" style="background-image:url('${rImgs}')">
+          <span class="status-badge ${getStatusClass(r.status || 'EN VENTA')}">${r.status || 'EN VENTA'}</span>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">${r.titulo}</h3>
+          <p class="card-address">${r.ciudad}, ${r.departamento}</p>
+          <div class="card-specs">
+            ${r.habitaciones ? `<span>&#127968; ${r.habitaciones}</span>` : ''}
+            ${r.banos ? `<span>&#128703; ${r.banos}</span>` : ''}
+            ${r.metros ? `<span>&#9635; ${r.metros}m²</span>` : ''}
+          </div>
+          <div class="card-pricing"><span class="price">${rprecio}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+renderDeal();
+</script>
+
+<div id="lightbox" class="lightbox" style="display:none" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lb-close" onclick="closeLightbox()">&#10005;</button>
+    <button class="lb-prev" onclick="prevPhoto()">&#8592;</button>
+    <img id="lightboxImg" src="" alt="foto" class="lb-img">
+    <button class="lb-next" onclick="nextPhoto()">&#8594;</button>
+    <div id="lightboxCount" class="lb-count"></div>
+  </div>
+</div>
+
 </body>
 </html>
-
