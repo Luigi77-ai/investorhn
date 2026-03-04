@@ -4,59 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InvestorHN - Marketplace de Propiedades de Inversión en Honduras</title>
-Integrar mapa interactivo Leaflet con contadores por región y 8 propiedades totales    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-inner">
             <div class="logo">
-                <div>
-                    <div class="logo-name">InvestorHN</div>
-                    <span class="logo-sub">Propiedades de Inversión</span>
-                </div>
+                <div class="logo-name">InvestorHN</div>
+                <span class="logo-sub">Propiedades de Inversión</span>
             </div>
-
             <div class="nav-search">
                 <input type="text" id="searchInput" placeholder="Buscar por ciudad, colonia o tipo...">
-                <svg width="16" height="16" fill="none" stroke="#999" stroke-width="2"><circle cx="7" cy="7" r="6"/><path d="M11 11l4 4"/></svg>
             </div>
-
             <div class="nav-links">
                 <a href="index.html" class="nav-link active">Marketplace</a>
                 <a href="#" class="nav-link">Publicar Deal</a>
                 <a href="#" class="nav-link">Mi Buy Box</a>
             </div>
-
             <div class="nav-actions">
                 <button class="btn-currency active" onclick="toggleCurrency('lps')">LPS</button>
                 <button class="btn-currency" onclick="toggleCurrency('usd')">USD</button>
-                <a href="https://wa.me/50498983365" target="_blank" class="btn-wa">
-                    <svg width="18" height="18" fill="currentColor"><path d="M9 0C4.03 0 0 4.03 0 9c0 1.6.42 3.1 1.15 4.4L0 18l4.73-1.24A8.94 8.94 0 009 18c4.97 0 9-4.03 9-9s-4.03-9-9-9zm4.54 12.71c-.19.55-1.13 1.04-1.55 1.1-.38.06-.88.09-1.42-.09-.33-.11-.75-.25-1.29-.5-2.27-.98-3.75-3.28-3.86-3.43-.11-.15-.9-1.19-.9-2.27s.57-1.61.78-1.83c.19-.2.41-.25.55-.25.13 0 .27 0 .38.01.13.01.29-.05.45.34.17.4.58 1.42.63 1.52.05.1.09.23.02.37-.07.15-.1.24-.21.37-.1.13-.22.29-.31.39-.1.1-.21.22-.09.43.12.2.54.89 1.16 1.44.79.71 1.46.93 1.66 1.04.2.1.32.08.44-.05.12-.13.51-.6.65-.8.13-.2.27-.17.45-.1.18.07 1.14.54 1.34.63.19.1.32.15.37.23.05.08.05.46-.14 1.01z"/></svg>
-                    WhatsApp
-                </a>
             </div>
         </div>
     </nav>
 
-    <!-- LAYOUT PRINCIPAL -->
     <div class="main-layout">
-        <!-- MAPA -->
         <div class="map-panel">
-            <div class="map-placeholder">
-                <h3>🗺️ Mapa de Honduras</h3>
-                <p>Visualiza todas las propiedades de inversión disponibles en Honduras</p>
-            </div>
+            <div id="map" style="height: 100%; width: 100%;"></div>
             <div class="map-tabs">
                 <button class="map-tab active">Mapa</button>
                 <button class="map-tab">Lista</button>
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
         <div class="list-panel">
-            <!-- FILTROS -->
             <div class="filters-bar">
                 <div class="filters-top">
                     <select class="f-select" id="filterCiudad">
@@ -64,55 +47,50 @@ Integrar mapa interactivo Leaflet con contadores por región y 8 propiedades tot
                         <option value="Tegucigalpa">Tegucigalpa</option>
                         <option value="San Pedro Sula">San Pedro Sula</option>
                     </select>
-
                     <select class="f-select" id="filterTipo">
                         <option value="">Todos los Tipos</option>
                         <option value="Casa">Casa</option>
                         <option value="Apartamento">Apartamento</option>
                         <option value="Terreno">Terreno</option>
                     </select>
-
-                    <select class="f-select" id="filterEstado">
-                        <option value="">Todos los Estados</option>
-                        <option value="Disponible">Disponible</option>
-                        <option value="En Proceso">En Proceso</option>
-                        <option value="Vendido">Vendido</option>
-                    </select>
-
-                    <button class="btn-allfilters">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h12M5 2v8M11 10v8"/></svg>
-                        Todos los Filtros
-                    </button>
                 </div>
-
                 <div class="filters-bottom">
                     <div class="results-count">
-                        <strong id="resultCount">0</strong> propiedades encontradas
+                        <strong id="resultCount">0</strong> propiedades
                     </div>
                     <select class="sort-select" id="sortBy">
                         <option value="recientes">Más recientes</option>
                         <option value="precio-asc">Precio: menor a mayor</option>
-                        <option value="precio-desc">Precio: mayor a menor</option>
-                        <option value="margen-desc">Mayor margen</option>
                     </select>
                 </div>
             </div>
 
-            <!-- LISTADO DE PROPIEDADES -->
-            <div class="properties-list" id="propertiesList">
-                <!-- Se carga dinámicamente con JS -->
-            </div>
+            <div class="properties-list" id="propertiesList"></div>
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="data.js"></script>
     <script>
+        let map = L.map('map').setView([14.1, -87.2], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        let markers = L.layerGroup().addTo(map);
+
         let monedaActual = 'lps';
+
+        function renderMarkers(props) {
+            markers.clearLayers();
+            props.forEach(p => {
+                if (p.lat && p.lng) {
+                    L.marker([p.lat, p.lng]).addTo(markers)
+                        .bindPopup(`<b>${p.titulo}</b><br>${p.ciudad}<br><a href="deal.html?id=${p.id}">Ver detalles</a>`);
+                }
+            });
+        }
 
         function toggleCurrency(currency) {
             monedaActual = currency;
-            document.querySelectorAll('.btn-currency').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.btn-currency').forEach(btn => btn.classList.toggle('active', btn.textContent.toLowerCase() === currency));
             renderProperties(filtrarPropiedades());
         }
 
@@ -123,19 +101,12 @@ Integrar mapa interactivo Leaflet con contadores por región y 8 propiedades tot
         function filtrarPropiedades() {
             const ciudad = document.getElementById('filterCiudad').value;
             const tipo = document.getElementById('filterTipo').value;
-            const estado = document.getElementById('filterEstado').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
-
+            
             return propiedades.filter(p => {
                 if (ciudad && p.ciudad !== ciudad) return false;
                 if (tipo && p.tipo !== tipo) return false;
-                if (estado && p.estado !== estado) return false;
-                if (search && !(
-                    p.titulo.toLowerCase().includes(search) ||
-                    p.ciudad.toLowerCase().includes(search) ||
-                    p.colonia.toLowerCase().includes(search) ||
-                    p.tipo.toLowerCase().includes(search)
-                )) return false;
+                if (search && !(p.titulo.toLowerCase().includes(search) || p.ciudad.toLowerCase().includes(search))) return false;
                 return true;
             });
         }
@@ -143,66 +114,26 @@ Integrar mapa interactivo Leaflet con contadores por región y 8 propiedades tot
         function renderProperties(props) {
             const container = document.getElementById('propertiesList');
             document.getElementById('resultCount').textContent = props.length;
-            
-            if (props.length === 0) {
-                container.innerHTML = '<div class="no-results">No se encontraron propiedades con los filtros seleccionados</div>';
-                return;
-            }
+            renderMarkers(props);
 
-            container.innerHTML = props.map(p => {
-                const precio = monedaActual === 'lps' ? `L. ${formatNumber(p.preciolps)}` : `$${formatNumber(p.preciousd)}`;
-                const arv = monedaActual === 'lps' ? `L. ${formatNumber(p.arvlps)}` : `$${formatNumber(p.arvusd)}`;
-                const margen = monedaActual === 'lps' ? `L. ${formatNumber(p.margenlps)}` : `$${formatNumber(p.margenusd)}`;
-                
-                return `
-                    <div class="property-card" onclick="window.location.href='deal.html?id=${p.id}'">
-                        ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
-                        <div class="card-img" style="background-image: url('${p.img}')"></div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <h3 class="card-title">${p.titulo}</h3>
-                                <div class="card-location">
-                                    <svg width="14" height="14" fill="#999"><path d="M7 0C4.24 0 2 2.24 2 5c0 3.88 5 9 5 9s5-5.12 5-9c0-2.76-2.24-5-5-5zm0 7a2 2 0 110-4 2 2 0 010 4z"/></svg>
-                                    ${p.ciudad}, ${p.departamento}
-                                </div>
-                            </div>
-                            <div class="card-specs">
-                                ${p.habitaciones > 0 ? `<span>${p.habitaciones} hab</span>` : ''}
-                                ${p.banos > 0 ? `<span>${p.banos} baños</span>` : ''}
-                                ${p.metros > 0 ? `<span>${p.metros} m²</span>` : ''}
-                                <span>${p.tipo}</span>
-                            </div>
-                            <div class="card-pricing">
-                                <div class="price-row">
-                                    <span class="price-label">Precio</span>
-                                    <span class="price-value">${precio}</span>
-                                </div>
-                                <div class="price-row">
-                                    <span class="price-label">ARV</span>
-                                    <span class="price-value">${arv}</span>
-                                </div>
-                                <div class="price-row highlight">
-                                    <span class="price-label">Margen</span>
-                                    <span class="price-value">${margen}</span>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <span class="days-ago">Hace ${p.dias} días</span>
-                                <span class="views">${p.vistas} vistas</span>
-                            </div>
+            container.innerHTML = props.map(p => `
+                <div class="property-card" onclick="window.location.href='deal.html?id=${p.id}'">
+                    <div class="card-img" style="background-image: url('${p.img}')"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">${p.titulo}</h3>
+                        <p>${p.ciudad}, ${p.departamento}</p>
+                        <div class="card-pricing">
+                            <span>L. ${formatNumber(p.preciolps)}</span>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
-        // Event listeners
         document.getElementById('filterCiudad').addEventListener('change', () => renderProperties(filtrarPropiedades()));
         document.getElementById('filterTipo').addEventListener('change', () => renderProperties(filtrarPropiedades()));
-        document.getElementById('filterEstado').addEventListener('change', () => renderProperties(filtrarPropiedades()));
         document.getElementById('searchInput').addEventListener('input', () => renderProperties(filtrarPropiedades()));
 
-        // Inicializar
         renderProperties(propiedades);
     </script>
 </body>
