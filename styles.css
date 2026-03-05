@@ -131,30 +131,28 @@
 
 /* BOTÓN PUBLICAR DEAL - Destacado con gradiente y animación */
 .nav-link.btn-publish-deal {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: #10b981 !important; /* Verde vibrante */
   color: #fff !important;
   padding: 12px 24px !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
   transform: scale(1);
-  animation: pulsePublish 2s infinite;
-}
+  border: 2px solid #059669 !important;
+  animation: pulseGreen 2s infinite;
 
 .nav-link.btn-publish-deal:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
-}
+  background: #059669 !important; /* Verde más oscuro al hover */
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6) !important;
 
-@keyframes pulsePublish {
+@keyframes pulseGreen {
   0%, 100% {
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
   }
   50% {
-    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7);
+    box-shadow: 0 4px 25px rgba(16, 185, 129, 0.8);
   }
-}
 
 /* Botones de moneda más grandes */
 .btn-currency {
@@ -200,9 +198,14 @@
 }
 
 .chat-bubble::before {
-  content: '💬';
-  font-size: 28px;
-}
+.chat-bubble::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" fill="%23ffffff" viewBox="0 0 24 24"%3E%3Cpath d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/%3E%3C/svg%3E');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 
 @keyframes floatChat {
   0%, 100% {
