@@ -87,3 +87,152 @@
   font-size: 1.4rem;
   color: #0066cc;
 }
+
+
+/* ===== MEJORAS UI - Navbar más grande y destacado ===== */
+
+/* Navbar aumentado de altura */
+.navbar {
+  height: 85px !important;
+}
+
+.nav-inner {
+  padding: 0 32px !important;
+}
+
+/* Logo más grande */
+.logo-name {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+}
+
+.logo-sub {
+  font-size: 13px !important;
+}
+
+/* Buscador más grande */
+.nav-search input {
+  padding: 12px 18px !important;
+  font-size: 15px !important;
+}
+
+/* Links de navegación más grandes */
+.nav-link {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  padding: 10px 16px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  background: #f0f7ff;
+}
+
+/* BOTÓN PUBLICAR DEAL - Destacado con gradiente y animación */
+.nav-link.btn-publish-deal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  transform: scale(1);
+  animation: pulsePublish 2s infinite;
+}
+
+.nav-link.btn-publish-deal:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
+
+@keyframes pulsePublish {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.7);
+  }
+}
+
+/* Botones de moneda más grandes */
+.btn-currency {
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+/* Botón de favoritos más grande */
+.btn-favorites {
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+/* Ajustar contenido debajo del navbar */
+.main-layout {
+  margin-top: 85px !important;
+}
+
+/* ===== CHAT BUBBLE FLOTANTE ===== */
+.chat-bubble {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: all 0.3s;
+  animation: floatChat 3s ease-in-out infinite;
+}
+
+.chat-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+}
+
+.chat-bubble::before {
+  content: '💬';
+  font-size: 28px;
+}
+
+@keyframes floatChat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Pulso en el chat bubble */
+.chat-bubble::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #25D366;
+  animation: chatPulse 2s infinite;
+}
+
+@keyframes chatPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
